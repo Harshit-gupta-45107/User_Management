@@ -46,14 +46,11 @@ async function initDatabase() {
       password: dbConfig.password
     });
 
-    // Create database if it doesn't exist
     await connection.execute(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
     await connection.end();
 
-    // Connect to the database
     db = await mysql.createConnection(dbConfig);
-    
-    // Create users table if it doesn't exist
+
     await db.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -124,7 +121,6 @@ const validateUser = (user) => {
 
 // Routes
 
-// Get all users
 app.get('/api/users', async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT * FROM users ORDER BY created_at DESC');
@@ -135,7 +131,6 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-// Download all users as Excel template
 app.get('/api/users/template', async (req, res) => {
   console.log('HIT /api/users/template route'); // <-- Log for debugging
   try {
@@ -166,7 +161,6 @@ app.get('/api/users/template', async (req, res) => {
   }
 });
 
-// Get user by ID
 app.get('/api/users/:id', async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [req.params.id]);
@@ -180,7 +174,6 @@ app.get('/api/users/:id', async (req, res) => {
   }
 });
 
-// Create new user
 app.post('/api/users', async (req, res) => {
   try {
     const userData = {
@@ -213,7 +206,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Update user
+
 app.put('/api/users/:id', async (req, res) => {
   try {
     const userData = {
@@ -250,7 +243,7 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
-// Delete user
+
 app.delete('/api/users/:id', async (req, res) => {
   try {
     const [result] = await db.execute('DELETE FROM users WHERE id = ?', [req.params.id]);
@@ -273,7 +266,6 @@ app.post('/api/users/bulk-upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Parse Excel file
     const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
@@ -308,7 +300,6 @@ app.post('/api/users/bulk-upload', upload.single('file'), async (req, res) => {
       }
     });
 
-    // If there are validation errors, don't save any data
     if (errors.length > 0) {
       return res.status(400).json({ 
         error: 'Validation errors found in uploaded file',
@@ -402,7 +393,6 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start server
 async function startServer() {
   await initDatabase();
   app.listen(PORT, () => {
