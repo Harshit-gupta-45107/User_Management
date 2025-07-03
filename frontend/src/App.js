@@ -149,7 +149,7 @@ function App() {
     }
   };
 
-  // Download template (fix: remove custom Content-Type header)
+  // Download template
   const downloadTemplate = async () => {
     setLoading(true);
     try {
@@ -173,7 +173,7 @@ function App() {
     }
   };
 
-  // Bulk upload: show detailed error messages for each row/field
+  // Bulk upload
   const handleBulkUpload = async () => {
     if (!uploadFile) return;
     setLoading(true);
@@ -226,7 +226,6 @@ function App() {
     return '••••••••••';
   };
 
-  // Toggle PAN visibility for a user or the form
   const togglePANVisibility = (id) => {
     setShowPAN(prev => ({
       ...prev,
@@ -234,7 +233,6 @@ function App() {
     }));
   };
 
-  // Copy PAN to clipboard
   const handleCopyPAN = (pan, id) => {
     navigator.clipboard.writeText(pan);
     setCopiedPAN(id);
